@@ -8,6 +8,31 @@ app.get('/', (request,response) => //when a get request hits the '/' URL
     response.send('TUT Vision API is alive'); //send this text back to whoever who asks
 });
 
+// Dashboard route: for a department id, return its staff and their live status.
+app.get('/api/departments/:id/dashboard', async (request, response) => { // ':id' = a changeable slot in the URL
+  const departmentId = request.params.id;    // read the id out of the URL (e.g. '1')
+
+  try {                                       // try the DB read; jump to catch on failure
+    const result = await pool.query(          // run the SQL and wait for the rows
+      `SELECT users.name,
+              status_state.availability,
+              status_state.presence,
+              status_message.text AS message
+       FROM users
+       JOIN status_state ON status_state.user_id = users.id
+       LEFT JOIN status_message ON status_message.user_id = users.id
+                               AND status_message.active = true
+       WHERE users.role = 'staff'
+         AND users.department_id = $1`,
+      [departmentId]                          // fills $1 safely — prevents SQL injection
+    );
+    response.json(result.rows);               // send the rows back as JSON
+  } catch (err) {                             // if the query threw an error...
+    console.error(err);                       // ...log it here for us
+    response.status(500).json({ error: 'Something went wrong' }); // ...reply with 500
+  }
+});
+
 //choose port since .env does not have one fall back to 3000
 const PORT = process.env.PORT || 3000; // || means left or right values if left is empty
 
