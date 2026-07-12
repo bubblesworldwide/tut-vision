@@ -1,6 +1,10 @@
 const express = require('express') //load express so we can build web server
 const pool = require('./db')//grab shared database pool from db.js
 const app = express(); //call express to create web server app and store it
+app.use(express.json()); //read json bodies so write endpoints can use request.body
+
+const userRoutes = require('./routes/users'); //status and message endpoints
+const followRoutes = require('./routes/follows'); //follow and unfollow endpoints
 
 //routing
 app.get('/', (request,response) => //when a get request hits the '/' URL
@@ -33,6 +37,10 @@ app.get('/api/departments/:id/dashboard', async (request, response) => { // ':id
   }
 });
 
+//mount the route files so requests under /api reach them
+app.use('/api', userRoutes); //e.g. /api/users/:id/status
+app.use('/api', followRoutes); //e.g. /api/follows
+
 //choose port since .env does not have one fall back to 3000
 const PORT = process.env.PORT || 3000; // || means left or right values if left is empty
 
@@ -41,4 +49,3 @@ app.listen(PORT, () => //start accepting requests on the port
 {
     console.log(`Server running on http://localhost:${PORT}`); //print the address to confirm it started
 });
-
