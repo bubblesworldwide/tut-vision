@@ -5,6 +5,7 @@ app.use(express.json()); //read json bodies so write endpoints can use request.b
 
 const userRoutes = require('./routes/users'); //status and message endpoints
 const followRoutes = require('./routes/follows'); //follow and unfollow endpoints
+const readRoutes = require('./routes/reads'); //read-only endpoints (lists, profiles)
 
 //routing
 app.get('/', (request,response) => //when a get request hits the '/' URL
@@ -40,6 +41,7 @@ app.get('/api/departments/:id/dashboard', async (request, response) => { // ':id
 //mount the route files so requests under /api reach them
 app.use('/api', userRoutes); //e.g. /api/users/:id/status
 app.use('/api', followRoutes); //e.g. /api/follows
+app.use('/api', readRoutes); //e.g. /api/departments
 
 //choose port since .env does not have one fall back to 3000
 const PORT = process.env.PORT || 3000; // || means left or right values if left is empty
