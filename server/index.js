@@ -1,12 +1,15 @@
 const express = require('express') //load express so we can build web server
 const pool = require('./db')//grab shared database pool from db.js
+const cors = require('cors'); //lets the Angular app (a different port) call this API
 const app = express(); //call express to create web server app and store it
+app.use(cors()); //allow cross-origin requests — without this the browser blocks Angular's calls
 app.use(express.json()); //read json bodies so write endpoints can use request.body
 
 const userRoutes = require('./routes/users'); //status and message endpoints
 const followRoutes = require('./routes/follows'); //follow and unfollow endpoints
 const readRoutes = require('./routes/reads'); //read-only endpoints (lists, profiles)
 const scheduleRoutes = require('./routes/schedule'); //consultation slot endpoints
+const deviceRoutes = require('./routes/devices'); //device registration + notification prefs
 
 //routing
 app.get('/', (request,response) => //when a get request hits the '/' URL
@@ -44,6 +47,7 @@ app.use('/api', userRoutes); //e.g. /api/users/:id/status
 app.use('/api', followRoutes); //e.g. /api/follows
 app.use('/api', readRoutes); //e.g. /api/departments
 app.use('/api', scheduleRoutes); //e.g. /api/users/:id/slots
+app.use('/api', deviceRoutes); //e.g. /api/users/:id/devices
 
 //choose port since .env does not have one fall back to 3000
 const PORT = process.env.PORT || 3000; // || means left or right values if left is empty
