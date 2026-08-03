@@ -1,10 +1,12 @@
 const express = require('express'); // load Express (for its Router tool)
 const pool = require('../db');      // grab the shared DB pool from server/db.js
+const requireAuth = require('../middleware/auth');          // verifies the microsoft token
+const { loadUser, requireSelf } = require('../middleware/user'); // resolves the token to our db row, then checks ownership
 
 const router = express.Router();    // mini-app holding the user-related routes
 
 // UPDATE a user's availability + presence.
-router.put('/users/:id/status', async (request, response) => {  // PUT = "update something that already exists"
+router.put('/users/:id/status', requireAuth, loadUser, requireSelf, async (request, response) => {  // PUT = "update something that already exists"
   const userId = request.params.id;                  // whose status, taken from the URL
   const { availability, presence } = request.body;   // unpack the two new values from the JSON body (destructuring)
 
@@ -29,7 +31,7 @@ router.put('/users/:id/status', async (request, response) => {  // PUT = "update
 });
 
 // POST a new status message for a user (e.g. "Off sick today").
-router.post('/users/:id/messages', async (request, response) => { // POST = "create something new"
+router.post('/users/:id/messages', requireAuth, loadUser, requireSelf, async (request, response) => { // POST = "create something new"
   const userId = request.params.id;   // whose message, from the URL
   const { text } = request.body;      // the message text from the JSON body
 
@@ -48,7 +50,7 @@ router.post('/users/:id/messages', async (request, response) => { // POST = "cre
 });
 
 // CLEAR (deactivate) a user's active status messages — a soft clear, keeping the history.
-router.delete('/users/:id/messages', async (request, response) => { // DELETE = "remove / clear"
+router.delete('/users/:id/messages', requireAuth, loadUser, requireSelf, async (request, response) => { // DELETE = "remove / clear"
   const userId = request.params.id;   // whose messages, from the URL
 
   try {                                               // try the update; jump to catch on failure
