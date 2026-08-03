@@ -39,7 +39,10 @@ function requireAuth(request, response, next) { //next = "carry on to the real r
     getKey, //function that supplies the right public key
     {
       audience: [process.env.CLIENT_ID, `api://${process.env.CLIENT_ID}`], //microsoft uses either form — accept both
-      issuer: `https://login.microsoftonline.com/${process.env.TENANT_ID}/v2.0`, //must come FROM our tenant
+      issuer: [ //microsoft issues v1 and v2 tokens with different issuer strings — accept both
+        `https://login.microsoftonline.com/${process.env.TENANT_ID}/v2.0`, //v2 endpoint issuer
+        `https://sts.windows.net/${process.env.TENANT_ID}/`, //v1 endpoint issuer (mind the trailing slash)
+      ],
       algorithms: ['RS256'], //only accept microsoft's signing algorithm
     },
     (err, decoded) => { //runs once verification finishes
@@ -51,7 +54,7 @@ function requireAuth(request, response, next) { //next = "carry on to the real r
       request.user = { //attach the verified identity to the request
         oid: decoded.oid, //microsoft's permanent id — matches users.microsoft_oid
         name: decoded.name, //display name from the token
-        email: decoded.preferred_username, //upn/email from the token
+        email: decoded.preferred_username || decoded.upn || decoded.unique_name || decoded.email, //v2 uses preferred_username, v1 uses upn/unique_name
         isStaff: isStaffEmail(decoded.preferred_username), //see swap-in point above
       };
 
