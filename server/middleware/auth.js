@@ -57,6 +57,7 @@ function requireAuth(request, response, next) { //next = "carry on to the real r
         email: decoded.preferred_username || decoded.upn || decoded.unique_name || decoded.email, //v2 uses preferred_username, v1 uses upn/unique_name
         isStaff: isStaffEmail(decoded.preferred_username || decoded.upn || decoded.unique_name || decoded.email), //see swap-in point above
 
+      };
       next(); //identity confirmed — let the real route run
     }
   );
