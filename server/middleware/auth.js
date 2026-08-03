@@ -55,7 +55,7 @@ function requireAuth(request, response, next) { //next = "carry on to the real r
         oid: decoded.oid, //microsoft's permanent id — matches users.microsoft_oid
         name: decoded.name, //display name from the token
         email: decoded.preferred_username || decoded.upn || decoded.unique_name || decoded.email, //v2 uses preferred_username, v1 uses upn/unique_name
-        isStaff: isStaffEmail(decoded.preferred_username), //see swap-in point above
+        isStaff: isStaffEmail(decoded.preferred_username || decoded.upn || decoded.unique_name || decoded.email), //see swap-in point above
       };
 
       next(); //identity confirmed — let the real route run
