@@ -1,10 +1,12 @@
 const express = require('express'); //load express for its router tool
 const pool = require('../db'); //grab the shared db pool from server/db.js
+const requireAuth = require('../middleware/auth'); //verifies the microsoft token
+const { loadUser, requireSelf, requireOwner } = require('../middleware/user'); //resolves the token to our db row, then checks ownership
 
 const router = express.Router(); //mini-app holding the schedule routes
 
 //CREATE a consultation slot for a staff member
-router.post('/users/:id/slots', async (request, response) => { //POST = make something new
+router.post('/users/:id/slots', requireAuth, loadUser, requireSelf, async (request, response) => { //POST = make something new
   const userId = request.params.id; //whose slot, from the url
   const { dayOfWeek, startTime, endTime } = request.body; //the slot details from the json body
 
@@ -23,7 +25,7 @@ router.post('/users/:id/slots', async (request, response) => { //POST = make som
 });
 
 //UPDATE one consultation slot by its id (partial updates allowed)
-router.put('/slots/:id', async (request, response) => { //PUT = update something that exists
+router.put('/slots/:id', requireAuth, loadUser, requireOwner('consultation_slot'), async (request, response) => { //PUT = update something that exists
   const slotId = request.params.id; //which slot, from the url
   const { dayOfWeek, startTime, endTime } = request.body; //any of these may be missing
 
@@ -51,7 +53,7 @@ router.put('/slots/:id', async (request, response) => { //PUT = update something
 });
 
 //DELETE one consultation slot by its id
-router.delete('/slots/:id', async (request, response) => { //DELETE = remove something
+router.delete('/slots/:id', requireAuth, loadUser, requireOwner('consultation_slot'), async (request, response) => { //DELETE = remove something
   const slotId = request.params.id; //the slot's id, from the URL
 
   try { //try the delete; jump to catch on failure
