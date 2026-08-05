@@ -1,10 +1,12 @@
 const express = require('express'); // load Express (for its Router tool)
 const pool = require('../db');      // grab the shared DB pool from server/db.js
+const requireAuth = require('../middleware/auth');              // verifies the microsoft token
+const { loadUser, requireBodySelf } = require('../middleware/user'); // resolves the token to our db row, then checks the body ids
 
 const router = express.Router();    // mini-app holding the follow-related routes
 
 // FOLLOW: a student follows a staff member.
-router.post('/follows', async (request, response) => {   // POST = create a new follow link
+router.post('/follows', requireAuth, loadUser, requireBodySelf('studentId'), async (request, response) => {   // POST = create a new follow link
   const { studentId, staffId } = request.body;   // both ids arrive in the JSON body (destructuring)
 
   try {                                           // try the insert; jump to catch on failure
@@ -22,7 +24,7 @@ router.post('/follows', async (request, response) => {   // POST = create a new 
 });
 
 // UNFOLLOW: remove the follow link between a student and a staff member.
-router.delete('/follows', async (request, response) => {  // DELETE = remove the link
+router.delete('/follows', requireAuth, loadUser, requireBodySelf('studentId'), async (request, response) => {  // DELETE = remove the link
   const { studentId, staffId } = request.body;   // both ids from the JSON body
 
   try {                                           // try the delete; jump to catch on failure
