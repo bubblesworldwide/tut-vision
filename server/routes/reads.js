@@ -1,10 +1,16 @@
 const express = require('express'); //load express for its router tool
 const pool = require('../db'); //grab the shared db pool from server/db.js
+const requireAuth = require('../middleware/auth'); //verifies the microsoft token
+const { loadUser, requireSelf } = require('../middleware/user'); //resolves the token to our db row, then checks ownership
 
 const router = express.Router(); //mini-app holding the read-only routes
 
+//POLICY: departments and staff profiles are visible to ANY signed-in user —
+//that's the point of the app, students look staff up. following lists are NOT:
+//who a student follows is personal, so that route adds requireSelf.
+
 //list all departments with their faculty and campus names
-router.get('/departments', async (request, response) => { //GET = fetch data
+router.get('/departments', requireAuth, loadUser, async (request, response) => { //GET = fetch data
   try { //try the db read; jump to catch on failure
     const result = await pool.query( //run the query and wait for the rows
       `SELECT department.id,
@@ -24,7 +30,7 @@ router.get('/departments', async (request, response) => { //GET = fetch data
 });
 
 //one staff member's full profile: their status, active message, and schedule
-router.get('/staff/:id', async (request, response) => { //':id' = the staff member's id
+router.get('/staff/:id', requireAuth, loadUser, async (request, response) => { //':id' = the staff member's id
   const staffId = request.params.id; //read the id from the url
 
   try { //try the db reads; jump to catch on failure
@@ -63,8 +69,8 @@ router.get('/staff/:id', async (request, response) => { //':id' = the staff memb
   }
 });
 
-//the staff a given student follows
-router.get('/students/:id/following', async (request, response) => { //':id' = the student's id
+//the staff a given student follows — PERSONAL, so only that student may read it
+router.get('/students/:id/following', requireAuth, loadUser, requireSelf, async (request, response) => { //':id' = the student's id
   const studentId = request.params.id; //read the id from the url
 
   try { //try the db read; jump to catch on failure
