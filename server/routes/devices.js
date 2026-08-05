@@ -1,10 +1,12 @@
 const express = require('express'); //load express for its router tool
 const pool = require('../db'); //grab the shared db pool from server/db.js
+const requireAuth = require('../middleware/auth'); //verifies the microsoft token
+const { loadUser, requireSelf, requireOwner, requireBodySelf } = require('../middleware/user'); //resolves the token to our db row, then checks ownership
 
 const router = express.Router(); //mini-app holding device + notification routes
 
 //REGISTER a device for a user (phone/browser that will receive push later)
-router.post('/users/:id/devices', async (request, response) => { //POST = create something new
+router.post('/users/:id/devices', requireAuth, loadUser, requireSelf, async (request, response) => { //POST = create something new
   const userId = request.params.id; //whose device, from the url
   const { platform, pushToken, geofenceEnabled } = request.body; //device details from the json body
 
@@ -25,7 +27,7 @@ router.post('/users/:id/devices', async (request, response) => { //POST = create
 });
 
 //UPDATE a device's push token or geofence opt-in (partial updates allowed)
-router.put('/devices/:id', async (request, response) => { //PUT = update something that exists
+router.put('/devices/:id', requireAuth, loadUser, requireOwner('device'), async (request, response) => { //PUT = update something that exists
   const deviceId = request.params.id; //which device, from the url
   const { pushToken, geofenceEnabled } = request.body; //either may be missing
 
@@ -50,7 +52,7 @@ router.put('/devices/:id', async (request, response) => { //PUT = update somethi
 });
 
 //UPDATE a student's notification preferences for one staff member they follow
-router.put('/follows/preferences', async (request, response) => { //prefs live ON the follow row itself
+router.put('/follows/preferences', requireAuth, loadUser, requireBodySelf('studentId'), async (request, response) => { //prefs live ON the follow row itself
   const { studentId, staffId, notifyStateChanges, notifyMessages } = request.body; //ids + any prefs being changed
 
   try { //try the update; jump to catch on failure
