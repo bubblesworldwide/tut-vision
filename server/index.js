@@ -2,6 +2,7 @@ const express = require('express') //load express so we can build web server
 const pool = require('./db')//grab shared database pool from db.js
 const cors = require('cors'); //lets the Angular app (a different port) call this API
 const requireAuth = require('./middleware/auth'); //the SSO bouncer
+const { loadUser } = require('./middleware/user'); //turns the token identity into our users row
 const app = express(); //call express to create web server app and store it
 app.use(cors()); //allow cross-origin requests — without this the browser blocks Angular's calls
 app.use(express.json()); //read json bodies so write endpoints can use request.body
@@ -18,13 +19,16 @@ app.get('/', (request,response) => //when a get request hits the '/' URL
     response.send('TUT Vision API is alive'); //send this text back to whoever who asks
 });
 
-//who am I? the first protected route — proves the bouncer works before we protect the rest
-app.get('/api/me', requireAuth, (request, response) => { //requireAuth runs first, route only runs if it calls next()
-  response.json(request.user); //echo back the verified identity the middleware attached
+//who am I? returns BOTH the token identity and our matching database row
+app.get('/api/me', requireAuth, loadUser, (request, response) => { //requireAuth then loadUser, route only runs if both call next()
+  response.json({ //one object holding both halves of "who you are"
+    token: request.user, //what microsoft says: oid, name, email, isStaff
+    user: request.dbUser, //what OUR db says: id, name, email, role, department_id
+  });
 });
 
 // Dashboard route: for a department id, return its staff and their live status.
-app.get('/api/departments/:id/dashboard', async (request, response) => { // ':id' = a changeable slot in the URL
+app.get('/api/departments/:id/dashboard', requireAuth, loadUser, async (request, response) => { // ':id' = a changeable slot in the URL
   const departmentId = request.params.id;    // read the id out of the URL (e.g. '1')
 
   try {                                       // try the DB read; jump to catch on failure
