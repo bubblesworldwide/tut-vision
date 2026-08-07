@@ -36,10 +36,19 @@ router.post('/users/:id/messages', requireAuth, loadUser, requireSelf, async (re
   const { text } = request.body;      // the message text from the JSON body
 
   try {                                               // try the insert; jump to catch on failure
-    const result = await pool.query(                  // run the INSERT and await the new row
-      `INSERT INTO status_message (user_id, text)
+    const result = await pool.query(                  // ONE statement, so postgres runs it atomically
+      `WITH deactivated AS (
+         UPDATE status_message
+            SET active = false
+          WHERE user_id = $1
+            AND active = true
+       )
+       INSERT INTO status_message (user_id, text)
        VALUES ($1, $2)
        RETURNING *`,
+      // WITH ... AS (...) is a CTE — a named step that runs as part of the same statement.
+      // deactivating the old message first keeps ONE active message per user, which is what
+      // the dashboard's LEFT JOIN assumes. two active rows = the staff member appears twice.
       [userId, text]                                  // values for $1, $2
     );
     response.status(201).json(result.rows[0]);        // 201 = created; send back the new message
