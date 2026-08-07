@@ -18,6 +18,10 @@
   @if (me(); as data) {
     <pre>{{ data | json }}</pre>
   }
+
+  @if (departmentId(); as deptId) {
+    <app-dashboard [departmentId]="deptId" />
+  }
 </main>
 
 <router-outlet />

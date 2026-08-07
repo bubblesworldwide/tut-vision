@@ -4,10 +4,11 @@ import { JsonPipe } from '@angular/common'; //lets the template pretty-print an 
 
 import { AuthService } from './auth.service'; //our msal wrapper
 import { API_BASE } from './auth.config'; //where the express api lives
+import { Dashboard } from './dashboard'; //the department dashboard component
 
 @Component({
   selector: 'app-root', //the tag index.html renders
-  imports: [RouterOutlet, JsonPipe], //standalone components must list everything the template uses
+  imports: [RouterOutlet, JsonPipe, Dashboard], //standalone components must list everything the template uses
   templateUrl: './app.html', //markup lives in its own file
   styleUrl: './app.scss', //styles too
 })
@@ -17,6 +18,7 @@ export class App implements OnInit { //OnInit = "run something when this compone
   //signals hold reactive state — the template re-renders itself whenever one changes
   protected readonly account = signal<string | null>(null); //who is signed in, or null
   protected readonly me = signal<unknown>(null); //whatever /api/me returned
+  protected readonly departmentId = signal<number | null>(null); //which department to show, taken from /api/me
   protected readonly error = signal<string | null>(null); //last error message, if any
   protected readonly busy = signal(false); //true while a request is in flight
 
@@ -57,7 +59,9 @@ export class App implements OnInit { //OnInit = "run something when this compone
         throw new Error(`API returned ${response.status}`); //so we throw ourselves
       }
 
-      this.me.set(await response.json()); //parse the json body and store it
+      const data = await response.json(); //parse the json body
+      this.me.set(data); //store it for the debug panel
+      this.departmentId.set(data?.user?.department_id ?? null); //pull the department out so the dashboard knows what to load
     } catch (err) { //network error, or the throw above
       this.error.set(err instanceof Error ? err.message : String(err)); //show why it failed
     }
