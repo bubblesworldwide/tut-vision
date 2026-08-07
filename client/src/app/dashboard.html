@@ -1,0 +1,34 @@
+<section class="dashboard">
+  <header>
+    <h2>Department dashboard</h2>
+    <button (click)="load()" [disabled]="loading()">
+      {{ loading() ? 'Loading…' : 'Refresh' }}
+    </button>
+  </header>
+
+  @if (error(); as message) {
+    <p class="error">Could not load: {{ message }}</p>
+  }
+
+  @if (!loading() && staff().length === 0) {
+    <p class="empty">No staff found in this department.</p>
+  }
+
+  <ul class="staff-list">
+    @for (person of staff(); track person.name) {
+      <li class="staff-row">
+        <span [class]="dotClass(person.availability)"></span>
+
+        <div class="details">
+          <strong>{{ person.name }}</strong>
+          <span class="meta">
+            {{ person.availability }} · {{ presenceLabel(person.presence) }}
+          </span>
+          @if (person.message) {
+            <span class="message">{{ person.message }}</span>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+</section>

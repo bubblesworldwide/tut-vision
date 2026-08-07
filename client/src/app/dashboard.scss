@@ -1,0 +1,49 @@
+.dashboard {
+  margin-top: 32px; //space below the sign-in area
+
+  header {
+    display: flex; //put the title and button on one row
+    align-items: center; //vertically centre them
+    justify-content: space-between; //title left, button right
+    margin-bottom: 12px; //space above the list
+  }
+
+  h2 { margin: 0; color: #0f172a; font-size: 18px; } //tight heading
+}
+
+.staff-list {
+  list-style: none; //no bullets
+  padding: 0; //no default indent
+  margin: 0; //no default gap
+}
+
+.staff-row {
+  display: flex; //dot on the left, details on the right
+  gap: 12px; //space between them
+  align-items: flex-start; //top-align so the dot sits by the name
+  padding: 12px 0; //vertical breathing room
+  border-bottom: 1px solid #e2e8f0; //separator line
+}
+
+.dot {
+  width: 12px; //small circle
+  height: 12px; //square so it renders round
+  border-radius: 50%; //make it a circle
+  margin-top: 5px; //nudge down to align with the name
+  flex-shrink: 0; //never squash when text is long
+
+  &.available { background: #16a34a; } //green
+  &.busy { background: #f59e0b; } //amber
+  &.unavailable { background: #94a3b8; } //grey
+}
+
+.details {
+  display: flex; //stack the lines
+  flex-direction: column; //vertically
+  gap: 2px; //tight spacing
+}
+
+.meta { color: #64748b; font-size: 13px; text-transform: capitalize; } //muted secondary line
+.message { color: #0f766e; font-size: 13px; font-style: italic; } //their status note, in teal
+.error { color: #b91c1c; font-weight: 600; } //red so failures are obvious
+.empty { color: #64748b; } //muted
