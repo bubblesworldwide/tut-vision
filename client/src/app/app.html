@@ -17,6 +17,7 @@
   @if (userId(); as uid) {
     @if (isStaff()) {
       <app-status-control [userId]="uid" (changed)="refreshDashboard()" />
+      <app-schedule-editor [userId]="uid" />
     }
   }
 

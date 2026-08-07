@@ -5,10 +5,11 @@ import { AuthService } from './auth.service'; //our msal wrapper
 import { API_BASE } from './auth.config'; //where the express api lives
 import { Dashboard } from './dashboard'; //the department dashboard component
 import { StatusControl } from './status-control'; //the staff status controls
+import { ScheduleEditor } from './schedule-editor'; //the consultation slot editor
 
 @Component({
   selector: 'app-root', //the tag index.html renders
-  imports: [RouterOutlet, Dashboard, StatusControl], //standalone components must list everything the template uses
+  imports: [RouterOutlet, Dashboard, StatusControl, ScheduleEditor], //standalone components must list everything the template uses
   templateUrl: './app.html', //markup lives in its own file
   styleUrl: './app.scss', //styles too
 })
