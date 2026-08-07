@@ -1,0 +1,44 @@
+<section class="status-control">
+  <h2>My status</h2>
+
+  <div class="group">
+    <span class="label">Availability</span>
+    @for (option of availabilities; track option) {
+      <button
+        [class.active]="availability() === option"
+        [disabled]="busy()"
+        (click)="setAvailability(option)">
+        {{ option }}
+      </button>
+    }
+  </div>
+
+  <div class="group">
+    <span class="label">Presence</span>
+    @for (option of presences; track option) {
+      <button
+        [class.active]="presence() === option"
+        [disabled]="busy()"
+        (click)="setPresence(option)">
+        {{ option === 'on_campus' ? 'On campus' : 'Off campus' }}
+      </button>
+    }
+  </div>
+
+  <div class="group column">
+    <span class="label">Status message</span>
+    <textarea
+      rows="2"
+      placeholder="e.g. In office until 15:00, walk-ins welcome"
+      [value]="messageText()"
+      (input)="onType($event)"></textarea>
+    <div>
+      <button [disabled]="busy() || !messageText().trim()" (click)="postMessage()">Post</button>
+      <button class="ghost" [disabled]="busy()" (click)="clearMessage()">Clear</button>
+    </div>
+  </div>
+
+  @if (error(); as message) {
+    <p class="error">{{ message }}</p>
+  }
+</section>

@@ -1,0 +1,54 @@
+.status-control {
+  margin-top: 32px; //space above
+  padding: 16px; //inner breathing room
+  border: 1px solid #e2e8f0; //light frame
+  border-radius: 8px; //soft corners
+
+  h2 { margin: 0 0 12px; font-size: 18px; color: #0f172a; } //tight heading
+}
+
+.group {
+  display: flex; //label and buttons on one row
+  align-items: center; //vertically centre
+  gap: 8px; //space between items
+  margin-bottom: 12px; //space between groups
+  flex-wrap: wrap; //wrap on narrow screens
+
+  &.column { //the message group stacks instead
+    flex-direction: column; //vertically
+    align-items: stretch; //full width
+  }
+}
+
+.label {
+  min-width: 100px; //line the groups up
+  color: #64748b; //muted
+  font-size: 13px; //small
+}
+
+button {
+  padding: 6px 14px; //compact
+  border: 1px solid #cbd5e1; //visible edge when inactive
+  border-radius: 6px; //soft corners
+  background: #fff; //plain by default
+  color: #0f172a; //dark text
+  cursor: pointer; //show it's clickable
+  text-transform: capitalize; //'available' renders as 'Available'
+
+  &.active { background: #0f766e; border-color: #0f766e; color: #fff; } //teal when selected
+  &:disabled { opacity: 0.5; cursor: default; } //dim while busy
+  &.ghost { background: #e2e8f0; border-color: #e2e8f0; } //secondary style
+}
+
+textarea {
+  width: 100%; //full width of the group
+  padding: 8px; //inner spacing
+  border: 1px solid #cbd5e1; //visible edge
+  border-radius: 6px; //match the buttons
+  font-family: inherit; //don't fall back to monospace
+  font-size: 14px; //readable
+  resize: vertical; //let the user grow it, but not sideways
+  margin-bottom: 8px; //space above the buttons
+}
+
+.error { color: #b91c1c; font-weight: 600; } //red so failures are obvious
