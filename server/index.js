@@ -14,6 +14,8 @@ const scheduleRoutes = require('./routes/schedule'); //consultation slot endpoin
 const deviceRoutes = require('./routes/devices'); //device registration + notification prefs
 
 //routing
+//PUBLIC BY DESIGN — hosting platforms and uptime monitors ping this and cannot authenticate.
+//returns a fixed string, no db query, so there is nothing to leak.
 app.get('/', (request,response) => //when a get request hits the '/' URL
 {
     response.send('TUT Vision API is alive'); //send this text back to whoever who asks
@@ -42,7 +44,10 @@ app.get('/api/departments/:id/dashboard', requireAuth, loadUser, async (request,
        LEFT JOIN status_message ON status_message.user_id = users.id
                                AND status_message.active = true
        WHERE users.role = 'staff'
-         AND users.department_id = $1`,
+         AND users.department_id = $1
+       ORDER BY users.name`,
+      // ORDER BY keeps the list stable — without it postgres returns rows in whatever
+      // order suits it, so the list reshuffles itself whenever a row is updated.
       [departmentId]                          // fills $1 safely — prevents SQL injection
     );
     response.json(result.rows);               // send the rows back as JSON

@@ -53,10 +53,12 @@ router.get('/staff/:id', requireAuth, loadUser, async (request, response) => { /
     }
 
     const schedule = await pool.query( //second query: their weekly consultation slots
-      `SELECT day_of_week, start_time, end_time
+      `SELECT id, day_of_week, start_time, end_time
        FROM consultation_slot
        WHERE user_id = $1
        ORDER BY day_of_week, start_time`,
+      //id is included so the frontend can PUT /slots/:id and DELETE /slots/:id —
+      //without it there is no way to edit or remove a slot from the ui.
       [staffId] //fills $1 safely
     );
 
