@@ -1,0 +1,33 @@
+.shell {
+  max-width: 720px; //keep the content readable
+  margin: 48px auto; //centre it with breathing room
+  padding: 0 24px; //stop text touching the edges on mobile
+  font-family: system-ui, sans-serif; //whatever the os uses — fast and native
+}
+
+h1 { color: #0f766e; } //TUT Vision teal
+
+button {
+  padding: 10px 18px; //comfortable tap target
+  margin-right: 8px; //space between buttons
+  font-size: 15px; //readable
+  border: none; //remove the default chrome
+  border-radius: 6px; //soft corners
+  background: #0f766e; //teal
+  color: #fff; //white text on teal
+  cursor: pointer; //show it's clickable
+
+  &:disabled { opacity: 0.5; cursor: default; } //dim while busy
+  &.ghost { background: #e2e8f0; color: #0f172a; } //secondary style for sign out
+}
+
+.who { color: #475569; } //muted grey
+.error { color: #b91c1c; font-weight: 600; } //red so failures are obvious
+
+pre {
+  background: #0f172a; //dark panel
+  color: #e2e8f0; //light text
+  padding: 12px; //inner spacing
+  border-radius: 6px; //match the buttons
+  overflow-x: auto; //scroll instead of overflowing on long lines
+}
