@@ -3,7 +3,6 @@
 
   @if (account(); as username) {
     <p class="who">Signed in as {{ username }}</p>
-    <button (click)="loadMe()">Refresh /api/me</button>
     <button class="ghost" (click)="signOut()">Sign out</button>
   } @else {
     <button (click)="signIn()" [disabled]="busy()">
@@ -15,8 +14,10 @@
     <p class="error">{{ message }}</p>
   }
 
-  @if (me(); as data) {
-    <pre>{{ data | json }}</pre>
+  @if (userId(); as uid) {
+    @if (isStaff()) {
+      <app-status-control [userId]="uid" (changed)="refreshDashboard()" />
+    }
   }
 
   @if (departmentId(); as deptId) {
