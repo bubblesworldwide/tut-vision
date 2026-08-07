@@ -17,7 +17,8 @@ export interface DashboardStaff {
 
 //one slot in a staff member's weekly schedule
 export interface Slot {
-  day_of_week: number; //0-6
+  id: number; //needed for PUT /slots/:id and DELETE /slots/:id
+  day_of_week: number; //0 = sunday ... 6 = saturday, enforced by a db CHECK
   start_time: string; //'14:00:00'
   end_time: string; //'16:00:00'
 }
@@ -65,14 +66,14 @@ export class ApiService {
     return this.request<DashboardStaff[]>(`/api/departments/${departmentId}/dashboard`);
   }
 
-  //GET one staff member's full profile, including their current status
+  //GET one staff member's full profile, including status and schedule
   getStaff(userId: string): Promise<StaffProfile> {
     return this.request<StaffProfile>(`/api/staff/${userId}`);
   }
 
   //PUT a new availability + presence — BOTH are required, the route has no COALESCE
   setStatus(userId: string, availability: Availability, presence: Presence): Promise<unknown> {
-    return this.request(`/api/users/${userId}/status`, 'PUT', { availability, presence }); //shorthand: { availability: availability, ... }
+    return this.request(`/api/users/${userId}/status`, 'PUT', { availability, presence });
   }
 
   //POST a new status message
@@ -83,5 +84,20 @@ export class ApiService {
   //DELETE (soft-clear) the active status messages
   clearMessages(userId: string): Promise<unknown> {
     return this.request(`/api/users/${userId}/messages`, 'DELETE');
+  }
+
+  //POST a new consultation slot — guarded by requireSelf (the url holds OUR user id)
+  createSlot(userId: string, dayOfWeek: number, startTime: string, endTime: string): Promise<Slot> {
+    return this.request<Slot>(`/api/users/${userId}/slots`, 'POST', { dayOfWeek, startTime, endTime });
+  }
+
+  //PUT changes to one slot — guarded by requireOwner, which looks the row up in the db
+  updateSlot(slotId: number, changes: Partial<{ dayOfWeek: number; startTime: string; endTime: string }>): Promise<Slot> {
+    return this.request<Slot>(`/api/slots/${slotId}`, 'PUT', changes); //Partial<> = every field optional, the route COALESCEs
+  }
+
+  //DELETE one slot — guarded by requireOwner
+  deleteSlot(slotId: number): Promise<unknown> {
+    return this.request(`/api/slots/${slotId}`, 'DELETE');
   }
 }

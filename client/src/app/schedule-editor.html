@@ -1,0 +1,37 @@
+<section class="schedule-editor">
+  <h2>My consultation times</h2>
+
+  @if (loading()) {
+    <p class="muted">Loading…</p>
+  } @else if (slots().length === 0) {
+    <p class="muted">No consultation times set yet.</p>
+  } @else {
+    <ul class="slot-list">
+      @for (slot of slots(); track slot.id) {
+        <li class="slot-row">
+          <span class="day">{{ dayNames[slot.day_of_week] }}</span>
+          <span class="time">{{ shortTime(slot.start_time) }} – {{ shortTime(slot.end_time) }}</span>
+          <button class="danger" [disabled]="busy()" (click)="removeSlot(slot.id)">Remove</button>
+        </li>
+      }
+    </ul>
+  }
+
+  <div class="add-row">
+    <select [value]="newDay()" (change)="onDay($event)" [disabled]="busy()">
+      @for (name of dayNames; track $index) {
+        <option [value]="$index">{{ name }}</option>
+      }
+    </select>
+
+    <input type="time" [value]="newStart()" (change)="onStart($event)" [disabled]="busy()" />
+    <span class="dash">–</span>
+    <input type="time" [value]="newEnd()" (change)="onEnd($event)" [disabled]="busy()" />
+
+    <button [disabled]="busy()" (click)="addSlot()">Add slot</button>
+  </div>
+
+  @if (error(); as message) {
+    <p class="error">{{ message }}</p>
+  }
+</section>

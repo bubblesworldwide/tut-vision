@@ -1,0 +1,57 @@
+.schedule-editor {
+  margin-top: 24px; //space above
+  padding: 16px; //inner breathing room
+  border: 1px solid #e2e8f0; //light frame
+  border-radius: 8px; //soft corners
+
+  h2 { margin: 0 0 12px; font-size: 18px; color: #0f172a; } //tight heading
+}
+
+.slot-list {
+  list-style: none; //no bullets
+  padding: 0; //no default indent
+  margin: 0 0 16px; //space before the add row
+}
+
+.slot-row {
+  display: flex; //day, time and button on one row
+  align-items: center; //vertically centre
+  gap: 12px; //space between them
+  padding: 8px 0; //vertical breathing room
+  border-bottom: 1px solid #f1f5f9; //faint separator
+}
+
+.day { min-width: 100px; font-weight: 600; color: #0f172a; } //fixed width lines the times up
+.time { color: #475569; } //muted
+
+.add-row {
+  display: flex; //everything on one row
+  align-items: center; //vertically centre
+  gap: 8px; //space between controls
+  flex-wrap: wrap; //wrap on narrow screens
+}
+
+select, input[type='time'] {
+  padding: 6px 8px; //comfortable
+  border: 1px solid #cbd5e1; //visible edge
+  border-radius: 6px; //soft corners
+  font-family: inherit; //don't fall back to monospace
+  font-size: 14px; //readable
+}
+
+.dash { color: #94a3b8; } //muted separator
+
+button {
+  padding: 6px 14px; //compact
+  border: none; //remove default chrome
+  border-radius: 6px; //soft corners
+  background: #0f766e; //teal
+  color: #fff; //white text
+  cursor: pointer; //show it's clickable
+
+  &:disabled { opacity: 0.5; cursor: default; } //dim while busy
+  &.danger { background: #fee2e2; color: #991b1b; } //red-tinted for destructive actions
+}
+
+.muted { color: #64748b; } //secondary text
+.error { color: #b91c1c; font-weight: 600; margin-top: 8px; } //red so failures are obvious
