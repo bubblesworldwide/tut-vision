@@ -35,7 +35,8 @@ app.get('/api/departments/:id/dashboard', requireAuth, loadUser, async (request,
 
   try {                                       // try the DB read; jump to catch on failure
     const result = await pool.query(          // run the SQL and wait for the rows
-      `SELECT users.name,
+      `SELECT users.id,
+              users.name,
               status_state.availability,
               status_state.presence,
               status_message.text AS message
@@ -46,8 +47,8 @@ app.get('/api/departments/:id/dashboard', requireAuth, loadUser, async (request,
        WHERE users.role = 'staff'
          AND users.department_id = $1
        ORDER BY users.name`,
-      // ORDER BY keeps the list stable — without it postgres returns rows in whatever
-      // order suits it, so the list reshuffles itself whenever a row is updated.
+      // users.id is included so a student can follow someone straight from this list —
+      // you cannot POST /api/follows without the staff member's id.
       [departmentId]                          // fills $1 safely — prevents SQL injection
     );
     response.json(result.rows);               // send the rows back as JSON
