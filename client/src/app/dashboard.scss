@@ -18,7 +18,7 @@
 }
 
 .staff-row {
-  display: flex; //dot on the left, details on the right
+  display: flex; //dot on the left, details, then the follow button
   gap: 12px; //space between them
   align-items: flex-start; //top-align so the dot sits by the name
   padding: 12px 0; //vertical breathing room
@@ -41,9 +41,24 @@
   display: flex; //stack the lines
   flex-direction: column; //vertically
   gap: 2px; //tight spacing
+  flex: 1; //take all remaining width, pushing the follow button right
 }
 
 .meta { color: #64748b; font-size: 13px; text-transform: capitalize; } //muted secondary line
 .message { color: #0f766e; font-size: 13px; font-style: italic; } //their status note, in teal
+
+.follow {
+  align-self: center; //vertically centre against the row
+  padding: 6px 14px; //compact
+  border: 1px solid #0f766e; //teal outline
+  border-radius: 6px; //soft corners
+  background: #fff; //hollow by default
+  color: #0f766e; //teal text
+  cursor: pointer; //show it's clickable
+  flex-shrink: 0; //never squash
+
+  &.following { background: #0f766e; color: #fff; } //filled once you follow them
+}
+
 .error { color: #b91c1c; font-weight: 600; } //red so failures are obvious
 .empty { color: #64748b; } //muted

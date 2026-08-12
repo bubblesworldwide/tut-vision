@@ -18,11 +18,17 @@
     @if (isStaff()) {
       <app-status-control [userId]="uid" (changed)="refreshDashboard()" />
       <app-schedule-editor [userId]="uid" />
+    } @else {
+      <app-following [studentId]="uid" />
     }
   }
 
   @if (departmentId(); as deptId) {
-    <app-dashboard [departmentId]="deptId" />
+    <app-dashboard
+      [departmentId]="deptId"
+      [showFollow]="!isStaff()"
+      [followedIds]="followedIds()"
+      (followToggled)="toggleFollow($event)" />
   }
 </main>
 

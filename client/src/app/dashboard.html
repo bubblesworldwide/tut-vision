@@ -15,7 +15,7 @@
   }
 
   <ul class="staff-list">
-    @for (person of staff(); track person.name) {
+    @for (person of staff(); track person.id) {
       <li class="staff-row">
         <span [class]="dotClass(person.availability)"></span>
 
@@ -28,6 +28,15 @@
             <span class="message">{{ person.message }}</span>
           }
         </div>
+
+        @if (showFollow()) {
+          <button
+            class="follow"
+            [class.following]="isFollowed(person.id)"
+            (click)="followToggled.emit(person.id)">
+            {{ isFollowed(person.id) ? 'Following' : 'Follow' }}
+          </button>
+        }
       </li>
     }
   </ul>
