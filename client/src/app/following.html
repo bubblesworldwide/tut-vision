@@ -1,0 +1,30 @@
+<section class="following">
+  <header>
+    <h2>Staff I follow</h2>
+    <button (click)="load()" [disabled]="loading()">
+      {{ loading() ? 'Loading…' : 'Refresh' }}
+    </button>
+  </header>
+
+  @if (error(); as message) {
+    <p class="error">Could not load: {{ message }}</p>
+  }
+
+  @if (!loading() && staff().length === 0) {
+    <p class="empty">You are not following anyone yet. Use the list below to follow staff.</p>
+  }
+
+  <ul class="staff-list">
+    @for (person of staff(); track person.id) {
+      <li class="staff-row">
+        <span [class]="dotClass(person.availability)"></span>
+        <div class="details">
+          <strong>{{ person.name }}</strong>
+          <span class="meta">
+            {{ person.availability ?? 'unknown' }} · {{ presenceLabel(person.presence) }}
+          </span>
+        </div>
+      </li>
+    }
+  </ul>
+</section>

@@ -9,10 +9,19 @@ export type Presence = 'on_campus' | 'off_campus';
 
 //one staff member on the dashboard — matches what the endpoint SELECTs
 export interface DashboardStaff {
+  id: string; //their user id, needed to follow them
   name: string; //the lecturer's name
   availability: Availability; //their current availability
   presence: Presence; //on or off campus
   message: string | null; //active status message, or null (LEFT JOIN can return nothing)
+}
+
+//one staff member a student follows — from GET /api/students/:id/following
+export interface FollowedStaff {
+  id: string; //their user id
+  name: string; //the lecturer's name
+  availability: Availability | null; //null if they have no status row
+  presence: Presence | null; //null if they have no status row
 }
 
 //one slot in a staff member's weekly schedule
@@ -99,5 +108,20 @@ export class ApiService {
   //DELETE one slot — guarded by requireOwner
   deleteSlot(slotId: number): Promise<unknown> {
     return this.request(`/api/slots/${slotId}`, 'DELETE');
+  }
+
+  //GET the staff a student follows — guarded by requireSelf, so only your own list
+  getFollowing(studentId: string): Promise<FollowedStaff[]> {
+    return this.request<FollowedStaff[]>(`/api/students/${studentId}/following`);
+  }
+
+  //POST a new follow — guarded by requireBodySelf('studentId')
+  follow(studentId: string, staffId: string): Promise<unknown> {
+    return this.request('/api/follows', 'POST', { studentId, staffId }); //studentId MUST be your own id
+  }
+
+  //DELETE a follow — guarded by requireBodySelf('studentId')
+  unfollow(studentId: string, staffId: string): Promise<unknown> {
+    return this.request('/api/follows', 'DELETE', { studentId, staffId }); //studentId MUST be your own id
   }
 }

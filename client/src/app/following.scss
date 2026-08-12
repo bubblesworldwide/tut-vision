@@ -1,0 +1,46 @@
+.following {
+  margin-top: 32px; //space above
+  padding: 16px; //inner breathing room
+  border: 1px solid #e2e8f0; //light frame
+  border-radius: 8px; //soft corners
+
+  header {
+    display: flex; //title and button on one row
+    align-items: center; //vertically centre
+    justify-content: space-between; //title left, button right
+    margin-bottom: 12px; //space above the list
+  }
+
+  h2 { margin: 0; font-size: 18px; color: #0f172a; } //tight heading
+}
+
+.staff-list {
+  list-style: none; //no bullets
+  padding: 0; //no default indent
+  margin: 0; //no default gap
+}
+
+.staff-row {
+  display: flex; //dot on the left, details on the right
+  gap: 12px; //space between them
+  align-items: flex-start; //top-align
+  padding: 10px 0; //vertical breathing room
+  border-bottom: 1px solid #f1f5f9; //faint separator
+}
+
+.dot {
+  width: 12px; //small circle
+  height: 12px; //square so it renders round
+  border-radius: 50%; //make it a circle
+  margin-top: 5px; //nudge down to align with the name
+  flex-shrink: 0; //never squash
+
+  &.available { background: #16a34a; } //green
+  &.busy { background: #f59e0b; } //amber
+  &.unavailable { background: #94a3b8; } //grey
+}
+
+.details { display: flex; flex-direction: column; gap: 2px; } //stack the lines
+.meta { color: #64748b; font-size: 13px; text-transform: capitalize; } //muted secondary line
+.error { color: #b91c1c; font-weight: 600; } //red so failures are obvious
+.empty { color: #64748b; } //muted
